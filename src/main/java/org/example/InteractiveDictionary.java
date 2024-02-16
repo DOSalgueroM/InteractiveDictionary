@@ -90,12 +90,6 @@ public class InteractiveDictionary {
         }
     }
 
-    private Node findMin(Node node) {
-        while (node.left != null) {
-            node = node.left;
-        }
-        return node;
-    }
 
     public void printInOrder() {
         conn.conectar();
@@ -126,7 +120,7 @@ public class InteractiveDictionary {
     public void searchInitialLetterInDatabase(char initialLetter) {
         System.out.println("\nWords starting with letter '" + initialLetter + "':");
 
-        // Sentencia SQL SELECT
+        // Sentence SQL SELECT
         String sql = "SELECT palabra, descripcion FROM diccionario WHERE LEFT(palabra, 1) = ? ORDER BY palabra";
         try (PreparedStatement preparedStatement = conn.conectar().prepareStatement(sql)) {
             preparedStatement.setString(1, String.valueOf(initialLetter));

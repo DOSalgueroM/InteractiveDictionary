@@ -10,15 +10,15 @@ public class Conexion {
     // Constructor que acepta la URL, usuario y contraseña
     public Conexion() {
         try {
-            // Cargar el controlador JDBC de MySQL
+            //  load the controlator JDBC of MySQL
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Datos de conexión
+            // connection data
             String url = "jdbc:mysql://localhost:3306/bd_diccionario";
             String usuario = "root";
             String contraseña = "";
 
-            // Establecer la conexión
+            // do the connection
             this.connection = DriverManager.getConnection(url, usuario, contraseña);
         } catch (ClassNotFoundException | SQLException e) {
             // Manejar cualquier error que pueda ocurrir durante la conexión
