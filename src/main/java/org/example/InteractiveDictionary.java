@@ -143,6 +143,7 @@ public class InteractiveDictionary {
         }
     }
 
+
     public List<String> autoComplete(String prefix) {
         List<String> suggestions = new ArrayList<>();
         autoCompleteRec(root, prefix, "", suggestions);

@@ -16,4 +16,8 @@ public class Node {
     public String getDefinition() {
         return definition;
     }
+
+    public String getWord() {
+        return word;
+    }
 }
