@@ -1,7 +1,6 @@
 import org.example.Conexion;
 import org.example.InteractiveDictionary;
 import org.example.Node;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -10,14 +9,15 @@ import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 public class SearchByWordTest {
     private Conexion conn;
 
     @Test
     public void testSearchByWord() {
-        // connection data       String url = "jdbc:mysql://localhost:3306/bd_diccionario";
+        // connection data
+        String url = "jdbc:mysql://localhost:3306/bd_diccionario";
         String usuario = "root";
         String contrasena = "";
 
