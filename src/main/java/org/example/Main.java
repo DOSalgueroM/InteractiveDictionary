@@ -1,9 +1,5 @@
 package org.example;
 
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -45,16 +41,6 @@ public class Main {
                     char initialLetter = scanner.next().charAt(0);
                     dictionary.searchInitialLetterInDatabase(initialLetter);
                     break;
-
-                    /* if (matchingNodes.isEmpty()) {
-                         System.out.println("No words found starting with the letter '" + initialLetter + "'.");
-                     } else {
-                         System.out.println("Words starting with the letter '" + initialLetter + "':");
-                         for (Node node : matchingNodes) {
-                             System.out.println(node.word + ": " + node.definition);
-                         }
-                     }*/
-
 
                 case 3:
                     System.out.println("Dictionary words: ");

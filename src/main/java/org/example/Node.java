@@ -12,4 +12,8 @@ public class Node {
         this.left = null;
         this.right = null;
     }
+
+    public String getDefinition() {
+        return definition;
+    }
 }
