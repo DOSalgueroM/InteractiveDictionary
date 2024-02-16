@@ -1,13 +1,22 @@
 package org.example;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InteractiveDictionary {
     private Node root;
-
+    Conexion conn = new Conexion();
     public InteractiveDictionary() {
         this.root = null;
+    }
+    public InteractiveDictionary(Conexion conn) {
+        this.root = null;
+        this.conn = conn;
     }
 
     public Node getRoot() {
@@ -15,64 +24,70 @@ public class InteractiveDictionary {
     }
 
     public void insert(String word, String definition) {
-        root = insertRec(root, word, definition);
-    }
+        conn.conectar();
 
-    private Node insertRec(Node node, String word, String definition) {
-        if (node == null) {
-            return new Node(word, definition);
+        // Sentencia SQL INSERT
+        String sql = "INSERT INTO diccionario (palabra, descripcion) VALUES (?, ?)";
+        PreparedStatement ps;
+
+        try {
+            ps = conn.conectar().prepareStatement(sql);
+            ps.setString(1, word);
+            ps.setString(2, definition);
+            ps.executeUpdate();
+            System.out.println("¡Word added correctly!");
+        } catch(SQLException e) {
+            System.out.println("Error to insert in the database: " + e.getMessage());
         }
-
-        if (word.compareTo(node.word) < 0) {
-            node.left = insertRec(node.left, word, definition);
-        } else if (word.compareTo(node.word) > 0) {
-            node.right = insertRec(node.right, word, definition);
-        }
-
-        return node;
     }
 
     public Node search(String word) {
-        return searchRec(root, word);
-    }
+        conn.conectar();
 
-    private Node searchRec(Node node, String word) {
-        if (node == null || node.word.equals(word)) {
-            return node;
+        // Sentence SQL INSERT, UPDATE, DELETE, SELECT
+        String sql = "SELECT * FROM diccionario WHERE palabra = ? ";
+        Statement st;
+
+        String wordResult = "";
+        String descripcion = "";
+
+        try {
+            CallableStatement cs = conn.conectar().prepareCall(sql);
+            cs.setString(1, word);
+            ResultSet rs = cs.executeQuery();
+
+            while (rs.next()) {
+                wordResult = rs.getString(2);
+                descripcion = rs.getString(3);
+            }
+        } catch(Exception e) {
+            System.out.println("Can´t connect to the database: " + e.getMessage());
         }
 
-        if (word.compareTo(node.word) < 0) {
-            return searchRec(node.left, word);
-        }
-
-        return searchRec(node.right, word);
+        return new Node(wordResult, descripcion);
+        // return searchRec(root, word);
     }
 
     public void delete(String word) {
-        root = deleteRec(root, word);
-    }
+        conn.conectar();
 
-    private Node deleteRec(Node node, String word) {
-        if (node == null) {
-            return node;
-        }
+        // Sentencia SQL DELETE
+        String sql = "DELETE FROM diccionario WHERE palabra = ?";
+        PreparedStatement ps;
 
-        if (word.compareTo(node.word) < 0) {
-            node.left = deleteRec(node.left, word);
-        } else if (word.compareTo(node.word) > 0) {
-            node.right = deleteRec(node.right, word);
-        } else {
-            if (node.left == null) {
-                return node.right;
-            } else if (node.right == null) {
-                return node.left;
+        try {
+            ps = conn.conectar().prepareStatement(sql);
+            ps.setString(1, word);
+            int rowsDeleted = ps.executeUpdate();
+
+            if (rowsDeleted > 0) {
+                System.out.println("¡The word '" + word + "' has been deleted successfully!");
+            } else {
+                System.out.println("The word '" + word + "' does´nt exist in the Dictionary.");
             }
-
-            node.word = findMin(node.right).word;
-            node.right = deleteRec(node.right, node.word);
+        } catch(SQLException e) {
+            System.out.println("Error to delete the word: " + e.getMessage());
         }
-
-        return node;
     }
 
     private Node findMin(Node node) {
@@ -83,56 +98,51 @@ public class InteractiveDictionary {
     }
 
     public void printInOrder() {
+        conn.conectar();
+
         System.out.println("\n------ Interactive Dictionary ------");
         printInOrderRec(root);
     }
 
     private void printInOrderRec(Node node) {
-        if (node != null) {
-            printInOrderRec(node.left);
-            System.out.println(node.word + ": " + node.definition);
-            printInOrderRec(node.right);
-        }
-    }
-    public List<Node> searchInitialLetter(char initialLetter) {
-        List<Node> wordsStartingWithLetter = new ArrayList<>();
-        searchInitialLetterRec(root, initialLetter, "", wordsStartingWithLetter);
-        return wordsStartingWithLetter;
-    }
-    private void searchInitialLetterRec(Node node, char targetLetter, String currentWord, List<Node> result) {
-        if (node != null) {
-            char nodeLetter = node.word.charAt(0);
+        // Sentencia SQL SELECT
+        String sql = "SELECT * FROM diccionario ORDER BY palabra";
+        Statement st;
 
-            // Compara la letra del nodo con la letra objetivo
-            if (nodeLetter == targetLetter) {
-                result.add(node);
+        try {
+            st = conn.conectar().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                String word = rs.getString("palabra");
+                String definition = rs.getString("descripcion");
+                System.out.println(word + ": " + definition);
             }
-
-            // Explora los nodos de manera recursiva
-            searchInitialLetterRec(node.left, targetLetter, currentWord, result);
-            searchInitialLetterRec(node.right, targetLetter, currentWord, result);
+        } catch(SQLException e) {
+            System.out.println("Error to show the words in dictionary: " + e.getMessage());
         }
     }
-    /*public List<String> searchInitialLetter(char initialLetter) {
-        List<String> wordsStartingWithLetter = new ArrayList<>();
-        searchInitialLetterRec(root, initialLetter, "", wordsStartingWithLetter);
-        return wordsStartingWithLetter;
-    }
 
-    private void searchInitialLetterRec(Node node, char targetLetter, String currentWord, List<String> result) {
-        if (node != null) {
-            char nodeLetter = node.word.charAt(0);
+    public void searchInitialLetterInDatabase(char initialLetter) {
+        System.out.println("\nWords starting with letter '" + initialLetter + "':");
 
-            // Compara la letra del nodo con la letra objetivo
-            if (nodeLetter == targetLetter) {
-                result.add(currentWord + node.word);
+        // Sentencia SQL SELECT
+        String sql = "SELECT palabra, descripcion FROM diccionario WHERE LEFT(palabra, 1) = ? ORDER BY palabra";
+        try (PreparedStatement preparedStatement = conn.conectar().prepareStatement(sql)) {
+            preparedStatement.setString(1, String.valueOf(initialLetter));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // Iter about results and print them
+                while (resultSet.next()) {
+                    String word = resultSet.getString("palabra");
+                    String definition = resultSet.getString("descripcion");
+                    System.out.println(word + ": " + definition);
+                }
             }
-
-            // Explora los nodos de manera recursiva
-            searchInitialLetterRec(node.left, targetLetter, currentWord, result);
-            searchInitialLetterRec(node.right, targetLetter, currentWord, result);
+        } catch (SQLException e) {
+            System.out.println("Error searching words in the database: " + e.getMessage());
         }
-    }*/
+    }
+
     public List<String> autoComplete(String prefix) {
         List<String> suggestions = new ArrayList<>();
         autoCompleteRec(root, prefix, "", suggestions);
@@ -189,4 +199,3 @@ public class InteractiveDictionary {
         }
     }*/
 }
-

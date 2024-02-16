@@ -1,6 +1,8 @@
 package org.example;
 
 
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,12 +12,11 @@ import java.util.Scanner;
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
+        Conexion conn = new Conexion();
+        conn.conectar();
+
         InteractiveDictionary dictionary = new InteractiveDictionary();
         Scanner scanner = new Scanner(System.in);
-
-        dictionary.insert("Programming", "The act of writing computer programs.");
-        dictionary.insert("Artificial Intelligence", "Field of study in computer science focusing on creating systems capable of tasks requiring human intelligence.");
-        dictionary.insert("Algorithm", "Sequence of steps or rules defined to perform a task or solve a problem.");
 
         while (true) {
             printMenu();
@@ -31,42 +32,29 @@ public class Main {
                     String wordToSearch = scanner.nextLine();
                     Node searchResult = dictionary.search(wordToSearch);
 
-                    if (searchResult != null) {
+                    if (searchResult != null && searchResult.word.equals(wordToSearch)) {
                         System.out.println("Definition of '" + wordToSearch + "': " + searchResult.definition);
                     } else {
                         System.out.println("Word not found.");
                     }
                     break;
 
-                    /*System.out.print("Enter the word to search: ");
-                    userInput = scanner.nextLine();
-                    autoCompleteAndSearch(userInput, dictionary);
-                    break;*/
-
                 case 2:
-                    /*System.out.print("Enter the initial letter to search: ");
-                    char initialLetter = scanner.nextLine().charAt(0);
-                    List<String> matchingWords = dictionary.searchInitialLetter(initialLetter);
 
-                    if (matchingWords.isEmpty()) {
-                        System.out.println("No words found starting with the letter '" + initialLetter + "'.");
-                    } else {
-                        System.out.println("Words starting with the letter '" + initialLetter + "': " + matchingWords);
-                    }
-                    break;*/
-                    System.out.print("Enter the initial letter to search: ");
-                    char initialLetter = scanner.nextLine().charAt(0);
-                    List<Node> matchingNodes = dictionary.searchInitialLetter(initialLetter);
-
-                    if (matchingNodes.isEmpty()) {
-                        System.out.println("No words found starting with the letter '" + initialLetter + "'.");
-                    } else {
-                        System.out.println("Words starting with the letter '" + initialLetter + "':");
-                        for (Node node : matchingNodes) {
-                            System.out.println(node.word + ": " + node.definition);
-                        }
-                    }
+                    System.out.print("Enter the initial letter: ");
+                    char initialLetter = scanner.next().charAt(0);
+                    dictionary.searchInitialLetterInDatabase(initialLetter);
                     break;
+
+                    /* if (matchingNodes.isEmpty()) {
+                         System.out.println("No words found starting with the letter '" + initialLetter + "'.");
+                     } else {
+                         System.out.println("Words starting with the letter '" + initialLetter + "':");
+                         for (Node node : matchingNodes) {
+                             System.out.println(node.word + ": " + node.definition);
+                         }
+                     }*/
+
 
                 case 3:
                     System.out.println("Dictionary words: ");
@@ -80,14 +68,12 @@ public class Main {
                     String newDefinition = scanner.nextLine();
 
                     dictionary.insert(newWord, newDefinition);
-                    System.out.println("Word added successfully.");
                     break;
 
                 case 5:
                     System.out.print("Enter the word to delete: ");
                     String wordToDelete = scanner.nextLine();
                     dictionary.delete(wordToDelete);
-                    System.out.println("Word deleted successfully.");
                     break;
 
                 case 6:
