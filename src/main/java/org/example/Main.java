@@ -93,12 +93,12 @@ public class Main {
         if (suggestions.isEmpty()) {
             System.out.println("No suggestions found.");
         } else if (suggestions.size() == 1 && suggestions.get(0).equalsIgnoreCase(userInput)) {
-            // Si solo hay una sugerencia y es la misma que la entrada del usuario, buscar la palabra directamente
+
             dictionary.search(userInput);
         } else {
             System.out.println("Autocomplete suggestions: " + suggestions);
             System.out.print("Select suggestion or continue typing: ");
-            String selectedSuggestion = scanner.nextLine(); // En este ejemplo, dejamos que el usuario seleccione la sugerencia
+            String selectedSuggestion = scanner.nextLine();
             dictionary.search(selectedSuggestion);
         }
     }

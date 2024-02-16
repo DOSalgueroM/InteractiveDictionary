@@ -17,8 +17,7 @@ public class SearchByWordTest {
 
     @Test
     public void testSearchByWord() {
-        // connection data
-        String url = "jdbc:mysql://localhost:3306/bd_diccionario";
+        // connection data       String url = "jdbc:mysql://localhost:3306/bd_diccionario";
         String usuario = "root";
         String contrasena = "";
 
