@@ -1,5 +1,4 @@
 import org.example.InteractiveDictionary;
-import org.example.Node;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -7,21 +6,15 @@ import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-public class SearchInitialLetterTest {
+public class PrintInOrderTest {
     @Test
-    public void searchInitialLetterInDatabaseTest() {
+    public void printInOrderTest() {
         // connection data
         String url = "jdbc:mysql://localhost:3306/bd_diccionario";
         String usuario = "root";
         String contraseña = "";
-
-        // Letter search
-        char letraBusqueda = 'S';
-
         // capture standard output
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
@@ -30,10 +23,10 @@ public class SearchInitialLetterTest {
         try (Connection connection = DriverManager.getConnection(url, usuario, contraseña)) {
             InteractiveDictionary diccionario = new InteractiveDictionary();
 
-            // do the search by initial letter
-            diccionario.searchInitialLetterInDatabase(letraBusqueda);
+            // print the words in order
+            diccionario.printInOrder();
 
-            // analize the standard output to verify if it contains the expected words
+            // Analiyze the standard output to verify if it contains the expected words
             String output = outContent.toString();
             assertTrue(output.contains("Sublime: Excellent, grand, or of elevated beauty"));
             assertTrue(output.contains("Substantial: Important or relevant in terms of quantity, quality, or significance"));
@@ -42,7 +35,7 @@ public class SearchInitialLetterTest {
             // Drive any SQL exceptions
             e.printStackTrace();
         } finally {
-            // Restore the connection
+            // Restore standard output
             System.setOut(System.out);
         }
     }

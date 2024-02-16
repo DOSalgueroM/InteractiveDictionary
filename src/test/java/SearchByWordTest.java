@@ -17,34 +17,34 @@ public class SearchByWordTest {
 
     @Test
     public void testSearchByWord() {
-        // Datos de conexión
+        // connection data
         String url = "jdbc:mysql://localhost:3306/bd_diccionario";
         String usuario = "root";
         String contrasena = "";
 
-        // Palabra existente en el diccionario
+        // Word to search
         String palabraExistente = "Patient";
 
-        // Palabra no existente en el diccionario
+        // Word does not exist
         String palabraNoExistente = "Door";
 
-        // Intenta establecer la conexión y realiza las pruebas
+        // Intent to establish the connection and perform the search
         try (Connection conn = DriverManager.getConnection(url, usuario, contrasena)) {
             InteractiveDictionary diccionario = new InteractiveDictionary();
 
-            // Realiza la búsqueda de la palabra existente
+            // Do the search for the existing word
             Node resultadoExistente = diccionario.search(palabraExistente);
 
-            // Verifica que la definición de la palabra existente sea la esperada
+            // Verify that the result is not null
             assertEquals("Having the capacity to tolerate or wait with calmness", resultadoExistente.getDefinition());
 
-            // Realiza la búsqueda de la palabra no existente
+            // Do the search for the non-existent word
             Node resultadoNoExistente = diccionario.search(palabraNoExistente);
 
-            // Verifica que el resultado para la palabra no existente sea nulo
+            // Prove that the result is null
             assertNotNull(resultadoNoExistente);
         } catch (SQLException e) {
-            // Maneja cualquier excepción de SQL
+            // Drive any SQL exceptions
             e.printStackTrace();
         }
 
